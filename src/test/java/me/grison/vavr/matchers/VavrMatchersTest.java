@@ -1,15 +1,22 @@
 package me.grison.vavr.matchers;
 
+import io.vavr.Lazy;
+import io.vavr.Tuple;
+import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
+import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import io.vavr.control.Validation;
 import org.hamcrest.Description;
+import org.hamcrest.Matchers;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
 
 import static me.grison.vavr.matchers.VavrMatchers.*;
 import static me.grison.vavr.matchers.VavrMatchers.hasLength;
+import static me.grison.vavr.matchers.VavrMatchers.containsInAnyOrder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -121,8 +128,8 @@ public class VavrMatchersTest {
 
     @Test
     public void testIsLeft() {
-        assertThat(Either.left(1), isLeft());
-        assertThat(Either.right(1), not(isLeft()));
+        assertThat(Either.left("foo"), isLeft());
+        assertThat(Either.right("foo"), not(isLeft()));
 
         Description description = new StringDescription();
         isLeft().describeMismatch(Either.right("foo"), description);
@@ -132,15 +139,15 @@ public class VavrMatchersTest {
         isLeft(is(1)).describeMismatch(Either.left(36), description);
         assertThat(description.toString(), is("Expected <Left()> whose content was <36>"));
     }
-    
+
     @Test
     public void testCollectionIsEmpty() {
         assertThat(List.empty(), isEmpty());
-        assertThat(List.of(1), not(isEmpty()));
+        assertThat(List.of("foo"), not(isEmpty()));
 
         Description description = new StringDescription();
-        isEmpty().describeMismatch(List.of(1, 2, 3), description);
-        assertThat(description.toString(), is("Expected empty but found <[1, 2, 3]>"));
+        isEmpty().describeMismatch(List.of("foo", "bar"), description);
+        assertThat(description.toString(), is("Expected empty but found <[foo, bar]>"));
     }
 
     @Test
@@ -152,11 +159,223 @@ public class VavrMatchersTest {
         assertThat(List.of(1, 2, 3), not(hasLength(lessThan(2))));
 
         Description description = new StringDescription();
-        hasLength(1).describeMismatch(List.of(1, 2), description);
-        assertThat(description.toString(), is("Expected Traversable to have length <1> but has length <2>"));
+        hasLength(1).describeMismatch(List.of("foo", "bar"), description);
+        assertThat(description.toString(),
+                is("Expected Traversable to have length <1> but has length <2>"));
 
         description = new StringDescription();
-        hasLength(lessThan(2)).describeMismatch(List.of(1, 2, 3), description);
-        assertThat(description.toString(), is("Expected Traversable to match length a value less than <2> but has length <3>"));
+        hasLength(lessThan(2)).describeMismatch(List.of("foo", "bar", "bazz"), description);
+        assertThat(description.toString(),
+                is("Expected Traversable to match length a value less than <2> but has length <3>"));
+    }
+
+    @Test
+    public void testContains() {
+        assertThat(List.of("foo", "bar"), contains("foo"));
+        assertThat(List.of("foo", "bar"), not(contains("bazz")));
+        assertThat(List.empty(), not(contains("foo")));
+
+        assertThat(List.of("foo", "bar"), contains(is("foo")));
+        assertThat(List.of("foo", "bar"), not(contains(is("bazz"))));
+        assertThat(List.empty(), not(contains(is("foo"))));
+
+        Description description = new StringDescription();
+        contains(is(0)).describeMismatch(List.of(1, 2), description);
+        assertThat(description.toString(),
+                is("Expected at least one element matching `is <0>' but found <List(1, 2)>"));
+    }
+
+    @Test
+    public void testContainsInAnyOrder() {
+        assertThat(List.of("foo", "bar", "bazz"), containsInAnyOrder(List.of("bar", "foo")));
+        assertThat(List.of("foo", "bar", "bazz"), containsInAnyOrder("bar", "foo"));
+        assertThat(List.empty(), not(containsInAnyOrder(List.of("foo", "bar"))));
+
+        Description description = new StringDescription();
+        containsInAnyOrder(List.of("foo", "bar", "bazz")).describeMismatch(List.of("foo"), description);
+        assertThat(description.toString(),
+                is("Expected a Traversable containing all [\"foo\",\"bar\",\"bazz\"] but is missing [\"bar\",\"bazz\"]"));
+    }
+
+    @Test
+    public void testAllMatch() {
+        assertThat(List.of("foo", "bar", "baz"), allMatch(Matchers.hasLength(3)));
+        assertThat(List.of("foo", "bar"), not(allMatch(Matchers.hasLength(4))));
+
+        final Description description = new StringDescription();
+        allMatch(is(true)).describeMismatch(List.of(false, true, false), description);
+        assertThat(description.toString(),
+                is("Expected a Traversable where all elements should match is <true> but found non-matching elements [<false>,<false>]"));
+    }
+
+    @Test
+    public void testIsSorted() {
+        assertThat(List.of(1, 2, 3), isSorted());
+        assertThat(List.of(2, 1, 4), not(isSorted()));
+
+        Description description = new StringDescription();
+        isSorted().describeMismatch(List.of(2, 1, 3), description);
+        assertThat(description.toString(),
+                is("Expected a Seq to be sorted but it was not"));
+    }
+
+    @Test
+    public void testIsReverseSorted() {
+        assertThat(List.of(3, 2, 1), isReverseSorted());
+        assertThat(List.of(2, 1, 4), not(isReverseSorted()));
+
+        Description description = new StringDescription();
+        isReverseSorted().describeMismatch(List.of(2, 1, 3), description);
+        assertThat(description.toString(),
+                is("Expected a Seq to be reverse sorted but it was not"));
+    }
+
+    @Test
+    public void testStartsWith() {
+        assertThat(List.of(1, 2, 3), startsWith(List.of(1, 2)));
+        assertThat(List.of(1, 2, 3), startsWith(1, 2));
+        assertThat(List.of(2, 1, 4), not(startsWith(List.of(1, 2))));
+
+        Description description = new StringDescription();
+        startsWith(List.of(1, 2)).describeMismatch(List.of(2, 1, 3), description);
+        assertThat(description.toString(),
+                is("Expected a Seq to start with [<1>,<2>] but found a Seq starting with [<2>,<1>]"));
+    }
+
+    @Test
+    public void testEndsWith() {
+        assertThat(List.of(1, 2, 3), endsWith(List.of(2, 3)));
+        assertThat(List.of(1, 2, 3), endsWith(2, 3));
+        assertThat(List.of(2, 1, 4), not(endsWith(List.of(1, 2))));
+
+        Description description = new StringDescription();
+        endsWith(List.of(1, 2, 3)).describeMismatch(List.of(2, 1), description);
+        assertThat(description.toString(),
+                is("Expected a Seq to end with [<1>,<2>,<3>] but found a Seq ending with [<2>,<1>]"));
+    }
+
+    @Test
+    public void testIsUnique() {
+        assertThat(List.of(1, 2, 3, 4), isUnique());
+        assertThat(List.of(1, 2, 3, 3), not(isUnique()));
+
+        Description description = new StringDescription();
+        isUnique().describeMismatch(List.of(1, 2, 1, 3, 3, 4), description);
+        assertThat(description.toString(),
+                is("Expected a Seq to have unique elements but found the following duplicate elements [<1>,<3>]"));
+    }
+
+    @Test
+    public void testContainsKey() {
+        assertThat(HashMap.of(1, 2, 3, 4), containsKey(List.of(1, 3)));
+        assertThat(HashMap.of(1, 2, 3, 4), containsKey(1, 3));
+        assertThat(HashMap.of(1, 2, 3, 4), not(containsKey(1, 2)));
+
+        Description description = new StringDescription();
+        containsKey(1, 2).describeMismatch(HashMap.of(1, 2, 3, 4), description);
+        assertThat(description.toString(),
+                is("Expected a Map containing all keys [<1>,<2>] but is missing [<2>]"));
+    }
+
+    @Test
+    public void testContainsValue() {
+        assertThat(HashMap.of(1, 2, 3, 4), containsValue(List.of(2, 4)));
+        assertThat(HashMap.of(1, 2, 3, 4), containsValue(2, 4));
+        assertThat(HashMap.of(1, 2, 3, 4), not(containsValue(2, 3)));
+
+        Description description = new StringDescription();
+        containsValue(1, 2).describeMismatch(HashMap.of(1, 2, 3, 4), description);
+        assertThat(description.toString(),
+                is("Expected a Map containing all values [<1>,<2>] but is missing [<1>]"));
+    }
+
+    @Test
+    public void testIsCancelled() {
+        Future<Integer> f = Future.of(() -> 1);
+        f.cancel();
+        assertThat(f, isCancelled());
+        f = Future.of(() -> 1);
+        f.get();
+        assertThat(f, not(isCancelled()));
+
+        Description description = new StringDescription();
+        isCancelled().describeMismatch(Future.of(() -> 1), description);
+        assertThat(description.toString(),
+                is("Expected a cancelled Future but it was not"));
+    }
+
+    @Test
+    public void testIsCompleted() {
+        Future<Integer> f = Future.of(() -> 1);
+        f.get();
+        assertThat(f, isCompleted());
+        f = Future.of(() -> {
+            Thread.sleep(10_000);
+            return 1;
+        });
+        assertThat(f, not(isCompleted()));
+
+        Description description = new StringDescription();
+        f = Future.of(() -> 1);
+        f.get();
+        isCompleted().describeMismatch(f, description);
+        assertThat(description.toString(),
+                is("Expected a completed Future but it was not"));
+    }
+
+    @Test
+    public void testIsEvaluated() {
+        Lazy<Integer> l = Lazy.of(() -> 1);
+        l.get();
+        assertThat(l, isEvaluated());
+        l = Lazy.of(() -> 1);
+        assertThat(l, not(isEvaluated()));
+
+        Description description = new StringDescription();
+        l = Lazy.of(() -> 1);
+        isEvaluated().describeMismatch(l, description);
+        assertThat(description.toString(),
+                is("Expected an evaluated Lazy but it was not"));
+    }
+
+    @Test
+    public void testTupleArity() {
+        assertThat(Tuple.of(1), hasArity(1));
+        assertThat(Tuple.of(1, 2), hasArity(2));
+        assertThat(Tuple.of(1, 2), hasArity(is(2)));
+        assertThat(Tuple.of(1, 2, 3), hasArity(3));
+        assertThat(Tuple.of(1, 2), not(hasArity(5)));
+
+        Description description = new StringDescription();
+        hasArity(2).describeMismatch(Tuple.of(1, 2, 3), description);
+        assertThat(description.toString(),
+                is("Expected a Tuple with arity <2> but found one with arity <3>"));
+
+        description = new StringDescription();
+        hasArity(is(2)).describeMismatch(Tuple.of(1, 2, 3), description);
+        assertThat(description.toString(),
+                is("Expected a Tuple to match arity is <2> but has arity <3>"));
+    }
+
+    @Test
+    public void testIsValid() {
+        assertThat(Validation.valid(1), isValid());
+        assertThat(Validation.invalid(1), not(isValid()));
+
+        Description description = new StringDescription();
+        isValid().describeMismatch(Validation.invalid(1), description);
+        assertThat(description.toString(),
+                is("Expected a valid Validation but it was not"));
+    }
+
+    @Test
+    public void testIsInvalid() {
+        assertThat(Validation.valid(1), not(isInvalid()));
+        assertThat(Validation.invalid(1), isInvalid());
+
+        Description description = new StringDescription();
+        isInvalid().describeMismatch(Validation.valid(1), description);
+        assertThat(description.toString(),
+                is("Expected an invalid Validation but it was not"));
     }
 }
