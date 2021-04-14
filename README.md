@@ -1,5 +1,7 @@
 # vavr-matchers
 
+![vavr-matchers](https://github.com/agrison/vavr-matchers/workflows/vavr-matchers/badge.svg)
+
 This library contains matchers for hamcrest.
 
 ## Matches
