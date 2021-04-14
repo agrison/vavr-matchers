@@ -42,7 +42,7 @@ public class VavrMatchersTest {
 
         Description description = new StringDescription();
         isEmpty().describeMismatch(Option.of(1337), description);
-        assertThat(description.toString(), is("Expected empty but found <1337>"));
+        assertThat(description.toString(), is("Expected an empty value but found <1337>"));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class VavrMatchersTest {
         Description description = new StringDescription();
         isSuccess().describeMismatch(Try.failure(new Exception()), description);
         assertThat(description.toString(),
-                is("Expected <Success()> but found <Failure(java.lang.Exception)>"));
+                is("Expected a <Success> but found <Failure(java.lang.Exception)>"));
 
         assertThat(Try.failure(new Exception()), not(isSuccess()));
         assertThat(Try.of(() -> {
@@ -65,7 +65,7 @@ public class VavrMatchersTest {
         description = new StringDescription();
         isSuccess(lessThan(36)).describeMismatch(Try.success(1337), description);
         assertThat(description.toString(),
-                is("Expected <Success()> content matching `a value less than <36>` but <1337> was greater than <36>"));
+                is("Expected a <Success> with content matching `a value less than <36>` but <1337> was greater than <36>"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class VavrMatchersTest {
         Description description = new StringDescription();
         isFailure().describeMismatch(Try.success("foo"), description);
         assertThat(description.toString(),
-                is("Expected <Failure()> but found <Success(foo)>"));
+                is("Expected a <Failure> but found <Success(foo)>"));
     }
 
     @Test
@@ -119,11 +119,11 @@ public class VavrMatchersTest {
 
         Description description = new StringDescription();
         isRight().describeMismatch(Either.left("foo"), description);
-        assertThat(description.toString(), is("Expected <Right()> but got <Left(foo)>"));
+        assertThat(description.toString(), is("Expected a <Right> but got <Left(foo)>"));
 
         description = new StringDescription();
         isRight(is(1)).describeMismatch(Either.right(36), description);
-        assertThat(description.toString(), is("Expected <Right()> whose content was <36>"));
+        assertThat(description.toString(), is("Expected a <Right> with content matching `is <1>` but was <36>"));
     }
 
     @Test
@@ -133,11 +133,11 @@ public class VavrMatchersTest {
 
         Description description = new StringDescription();
         isLeft().describeMismatch(Either.right("foo"), description);
-        assertThat(description.toString(), is("Expected <Left()> but got <Right(foo)>"));
+        assertThat(description.toString(), is("Expected a <Left> but got <Right(foo)>"));
 
         description = new StringDescription();
         isLeft(is(1)).describeMismatch(Either.left(36), description);
-        assertThat(description.toString(), is("Expected <Left()> whose content was <36>"));
+        assertThat(description.toString(), is("Expected a <Left> with content matching `is <1>` but was <36>"));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class VavrMatchersTest {
 
         Description description = new StringDescription();
         isEmpty().describeMismatch(List.of("foo", "bar"), description);
-        assertThat(description.toString(), is("Expected empty but found <[foo, bar]>"));
+        assertThat(description.toString(), is("Expected an empty value but found <[foo, bar]>"));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class VavrMatchersTest {
         Description description = new StringDescription();
         containsInAnyOrder(List.of("foo", "bar", "bazz")).describeMismatch(List.of("foo"), description);
         assertThat(description.toString(),
-                is("Expected a Traversable containing all [\"foo\",\"bar\",\"bazz\"] but is missing [\"bar\",\"bazz\"]"));
+                is("Expected a Traversable containing all of [\"foo\",\"bar\",\"bazz\"] but is missing [\"bar\",\"bazz\"]"));
     }
 
     @Test
@@ -267,26 +267,38 @@ public class VavrMatchersTest {
 
     @Test
     public void testContainsKey() {
-        assertThat(HashMap.of(1, 2, 3, 4), containsKey(List.of(1, 3)));
-        assertThat(HashMap.of(1, 2, 3, 4), containsKey(1, 3));
-        assertThat(HashMap.of(1, 2, 3, 4), not(containsKey(1, 2)));
+        assertThat(HashMap.of(1, 2, 3, 4), containsKeys(List.of(1, 3)));
+        assertThat(HashMap.of(1, 2, 3, 4), containsKeys(1, 3));
+        assertThat(HashMap.of(1, 2, 3, 4), not(containsKeys(1, 2)));
 
         Description description = new StringDescription();
-        containsKey(1, 2).describeMismatch(HashMap.of(1, 2, 3, 4), description);
+        containsKeys(1, 2).describeMismatch(HashMap.of(1, 2, 3, 4), description);
         assertThat(description.toString(),
-                is("Expected a Map containing all keys [<1>,<2>] but is missing [<2>]"));
+                is("Expected a Map containing the following keys [<1>,<2>] but is missing [<2>]"));
     }
 
     @Test
     public void testContainsValue() {
-        assertThat(HashMap.of(1, 2, 3, 4), containsValue(List.of(2, 4)));
-        assertThat(HashMap.of(1, 2, 3, 4), containsValue(2, 4));
-        assertThat(HashMap.of(1, 2, 3, 4), not(containsValue(2, 3)));
+        assertThat(HashMap.of(1, 2, 3, 4), containsValues(List.of(2, 4)));
+        assertThat(HashMap.of(1, 2, 3, 4), containsValues(2, 4));
+        assertThat(HashMap.of(1, 2, 3, 4), not(containsValues(2, 3)));
 
         Description description = new StringDescription();
-        containsValue(1, 2).describeMismatch(HashMap.of(1, 2, 3, 4), description);
+        containsValues(1, 2).describeMismatch(HashMap.of(1, 2, 3, 4), description);
         assertThat(description.toString(),
-                is("Expected a Map containing all values [<1>,<2>] but is missing [<1>]"));
+                is("Expected a Map containing the following values [<1>,<2>] but is missing [<1>]"));
+    }
+
+    @Test
+    public void testMapContains() {
+        assertThat(HashMap.of(1, 2, 3, 4), contains(1, 2));
+        assertThat(HashMap.of(1, 2, 3, 4), contains(3, 4));
+        assertThat(HashMap.of(1, 2, 3, 4), not(contains(1, 3)));
+
+        Description description = new StringDescription();
+        contains(1, 3).describeMismatch(HashMap.of(1, 2, 3, 4), description);
+        assertThat(description.toString(),
+                is("Expected a Map containing an entry <1>=<3> but found value <2>"));
     }
 
     @Test
@@ -309,6 +321,7 @@ public class VavrMatchersTest {
         Future<Integer> f = Future.of(() -> 1);
         f.get();
         assertThat(f, isCompleted());
+        assertThat(f, isCompleted(is(1)));
         f = Future.of(() -> {
             Thread.sleep(10_000);
             return 1;
@@ -328,6 +341,7 @@ public class VavrMatchersTest {
         Lazy<Integer> l = Lazy.of(() -> 1);
         l.get();
         assertThat(l, isEvaluated());
+        assertThat(l, isEvaluated(is(1)));
         l = Lazy.of(() -> 1);
         assertThat(l, not(isEvaluated()));
 
@@ -360,6 +374,7 @@ public class VavrMatchersTest {
     @Test
     public void testIsValid() {
         assertThat(Validation.valid(1), isValid());
+        assertThat(Validation.valid(1), isValid(is(1)));
         assertThat(Validation.invalid(1), not(isValid()));
 
         Description description = new StringDescription();
@@ -372,6 +387,7 @@ public class VavrMatchersTest {
     public void testIsInvalid() {
         assertThat(Validation.valid(1), not(isInvalid()));
         assertThat(Validation.invalid(1), isInvalid());
+        assertThat(Validation.invalid(1), isInvalid(is(1)));
 
         Description description = new StringDescription();
         isInvalid().describeMismatch(Validation.valid(1), description);
