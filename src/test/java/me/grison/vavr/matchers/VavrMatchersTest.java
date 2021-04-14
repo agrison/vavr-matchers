@@ -303,7 +303,10 @@ public class VavrMatchersTest {
 
     @Test
     public void testIsCancelled() {
-        Future<Integer> f = Future.of(() -> 1);
+        Future<Integer> f = Future.of(() -> {
+            Thread.sleep(10_000);
+            return 1;
+        });
         f.cancel();
         assertThat(f, isCancelled());
         f = Future.of(() -> 1);
