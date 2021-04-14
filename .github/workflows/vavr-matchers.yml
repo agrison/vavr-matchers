@@ -24,9 +24,9 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
       - name: Setting GPG default server 1/2
-        run: touch ~/.gnupg/gpg.conf
+        run: sudo touch ~/.gnupg/gpg.conf
       - name: Setting GPG default server 2/2
-        run: echo "keyserver hkp://hkps.pool.sks-keyservers.net" >> ~/.gnupg/gpg.conf
+        run: sudo echo "keyserver hkp://hkps.pool.sks-keyservers.net" >> ~/.gnupg/gpg.conf
       - name: Receiving GPG key
         run: gpg --recv-keys ${{secrets.GPG_KEYID}}
       - name: Import GPG Owner Trust
@@ -34,7 +34,7 @@ jobs:
       - name: Import GPG key
         run: echo ${{secrets.GPG_SECRET_KEYS}} | base64 --decode | gpg --import --no-tty --batch --yes
       - name: Clean settings.xml
-        run: rm -rf ~/.m2/settings.xml
+        run: sudo rm -rf ~/.m2/settings.xml
       - name: Create settings.xml
         uses: s4u/maven-settings-action@v1
         with:
