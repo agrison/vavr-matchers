@@ -23,10 +23,14 @@ jobs:
           distribution: 'adopt'
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
+      - name: Setting GPG default server
+        run: echo "keyserver hkp://hkps.pool.sks-keyservers.net" >> ~/.gnupg/gpg.conf
+      - name: Receiving GPG key
+        run: gpg --recv-keys AB2A09355E32E077D79528DBACE87A901A9CBD88
       - name: Import GPG Owner Trust
         run: echo ${{secrets.GPG_OWNERTRUST}} | base64 --decode | gpg --import-ownertrust
       - name: Import GPG key
-        run: echo ${{secrets.GPG_SECRET_KEYS}} | base64 --decode | gpg --keyserver hkp://hkps.pool.sks-keyservers.net --import --no-tty --batch --yes
+        run: echo ${{secrets.GPG_SECRET_KEYS}} | base64 --decode | gpg --import --no-tty --batch --yes
       - name: Clean settings.xml
         run: rm -rf ~/.m2/settings.xml
       - name: Create settings.xml
