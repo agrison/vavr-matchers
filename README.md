@@ -11,7 +11,7 @@ This library contains matchers for hamcrest.
 <dependency>
   <groupId>me.grison</groupId>
   <artifactId>vavr-matchers</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
 </dependency>
 ```
 
