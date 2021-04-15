@@ -397,4 +397,24 @@ public class VavrMatchersTest {
         assertThat(description.toString(),
                 is("Expected an invalid Validation but it was not"));
     }
+
+    @Test
+    public void readmeExample() {
+        Try<Integer> age = Try.of(() -> 30);
+        // ensure the Try is a success and its value is less than 40
+        assertThat(age, isSuccess(lessThan(40)));
+
+        List<Integer> ages = List.of(28, 35, 36, 40);
+
+        // ensure not empty
+        assertThat(ages, not(isEmpty()));
+        // ensure length is 4
+        assertThat(ages, hasLength(4));
+        // ensure it contains 35
+        assertThat(ages, contains(35));
+        // ensure it contains at least a value less than 30
+        assertThat(ages, contains(lessThan(30)));
+        // ensure that all values are less than 50
+        assertThat(ages, allMatch(lessThan(50)));
+    }
 }

@@ -6,11 +6,15 @@
 
     <groupId>me.grison</groupId>
     <artifactId>vavr-matchers</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+    <name>vavr-matchers</name>
+    <description>Matchers for hamcrest and Vavr</description>
+    <url>https://github.com/agrison/vavr-matchers</url>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -139,6 +143,21 @@
         </repository>
     </distributionManagement>
 
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>agrison</id>
+            <name>Alexandre Grison</name>
+            <email>a.grison@gmail.com</email>
+            <url>https://grison.me</url>
+        </developer>
+    </developers>
     <scm>
         <connection>scm:git:git://github.com/agrison/vavr-matchers.git</connection>
         <developerConnection>scm:git:git@github.com:agrison/vavr-matchers.git</developerConnection>

@@ -4,7 +4,55 @@
 
 This library contains matchers for hamcrest.
 
-## Matches
+## Install
+
+```xml
+<dependency>
+  <groupId>me.grison</groupId>
+  <artifactId>vavr-matchers</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+## Usage
+
+```java
+import static me.grison.vavr.matchers.VavrMatchers.*;
+
+class AllTests {
+    @Test
+    public void testTry() {
+        Try<Integer> age = Try.of(() -> 30);
+
+        // ensure the Try is a success and its value is less than 40
+        assertThat(age, isSuccess(lessThan(40)));
+    }
+    
+    @Test
+    public void testTraversable() {
+        List<Integer> ages = List.of(28, 35, 36, 40);
+
+        // ensure not empty
+        assertThat(ages, not(isEmpty()));
+
+        // ensure length is 4
+        assertThat(ages, hasLength(4));
+
+        // ensure it contains 35
+        assertThat(ages, contains(35));
+
+        // ensure it contains at least a value less than 30
+        assertThat(ages, contains(lessThan(30)));
+
+        // ensure that all values are less than 50
+        assertThat(ages, allMatch(lessThan(50)));
+    }
+}
+```
+
+See below for all available matchers.
+
+## Matchers
 
 ### Option
 
@@ -52,7 +100,7 @@ This library contains matchers for hamcrest.
 | endsWith(Traversable)     | Verifies that a `Traversable` ends with the given elements |
 | isUnique()     | Verifies that a `Traversable` contains no duplicates |
 
-### Maps
+### Map
 
 | Assertion                 | Description                                       |
 |------------------------|---------------------------------------------------|
@@ -95,9 +143,10 @@ This library contains matchers for hamcrest.
 
 ## Contribute
 
-It is a work in progress, so don't hesitate to contribute and add more matches
+It is a work in progress, so don't hesitate to contribute and add more matchers.
 
 ## Thanks
 
-I've needed this library and discovered this one from Vincent Ambo (@tazjin): https://github.com/tazjin/vavr-matchers
-Since it has been archived, and I needed some additional functionality, here comes this library.
+I needed this library and discovered an existing one from Vincent Ambo (@tazjin): https://github.com/tazjin/vavr-matchers
+
+Unfortunately it has been archived for years and couldn't fork it, so as I needed new functionalities here comes this library.
