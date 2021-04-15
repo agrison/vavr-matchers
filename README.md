@@ -113,7 +113,7 @@ See below for all available matchers.
 | containsSubSet(T...)     | Verifies that a `Set` contains at least the given elements |
 | containsSubSet(Traversable)     | Verifies that a `Set` contains at least the given elements |
 | isSubSetOf(T...)     | Verifies that a `Set` is a subset of the given elements |
-| isSubSetOf(Traversable)     | Verifies that a `Map` is a subset of the given elements |
+| isSubSetOf(Traversable)     | Verifies that a `Set` is a subset of the given elements |
 
 ### Map
 
