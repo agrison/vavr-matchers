@@ -6,7 +6,7 @@
 
     <groupId>me.grison</groupId>
     <artifactId>vavr-matchers</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <name>vavr-matchers</name>
     <description>Matchers for hamcrest and Vavr</description>
     <url>https://github.com/agrison/vavr-matchers</url>
