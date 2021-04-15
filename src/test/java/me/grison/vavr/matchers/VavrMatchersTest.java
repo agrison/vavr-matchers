@@ -12,6 +12,7 @@ import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
+import org.hamcrest.SelfDescribing;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
 
@@ -411,6 +412,12 @@ public class VavrMatchersTest {
         isEvaluated().describeMismatch(l, description);
         assertThat(description.toString(),
                 is("Expected an evaluated Lazy but it was not"));
+
+        description = new StringDescription();
+        l = Lazy.of(() -> 1);
+        isEvaluated(is(1)).describeMismatch(l, description);
+        assertThat(description.toString(),
+                is("Expected an evaluated Lazy but it was not"));
     }
 
     @Test
@@ -442,6 +449,11 @@ public class VavrMatchersTest {
         isValid().describeMismatch(Validation.invalid(1), description);
         assertThat(description.toString(),
                 is("Expected a valid Validation but it was not"));
+
+        description = new StringDescription();
+        isValid(is(1)).describeMismatch(Validation.invalid(1), description);
+        assertThat(description.toString(),
+                is("Expected a valid Validation but it was not"));
     }
 
     @Test
@@ -452,6 +464,11 @@ public class VavrMatchersTest {
 
         Description description = new StringDescription();
         isInvalid().describeMismatch(Validation.valid(1), description);
+        assertThat(description.toString(),
+                is("Expected an invalid Validation but it was not"));
+
+        description = new StringDescription();
+        isInvalid(is(1)).describeMismatch(Validation.valid(1), description);
         assertThat(description.toString(),
                 is("Expected an invalid Validation but it was not"));
     }
@@ -474,5 +491,49 @@ public class VavrMatchersTest {
         assertThat(ages, contains(lessThan(30)));
         // ensure that all values are less than 50
         assertThat(ages, allMatch(lessThan(50)));
+    }
+
+    @Test
+    public void describeTo() {
+        assertDescribeTo(isDefined(is(1)), "\"Expected a value with content matching \"is <1>");
+        assertDescribeTo(isEmpty(), "Expected an empty value");
+        assertDescribeTo(isSuccess(is(1)), "\"Expected a <Success> with content matching: \"is <1>");
+        assertDescribeTo(isFailure(), "Expected a <Failure> but it was not");
+        assertDescribeTo(isFailure(IllegalStateException.class), "Expected a <Failure(java.lang.IllegalStateException)>");
+        assertDescribeTo(isRight(is(1)), "Expected a <Right> with content matching is <1>");
+        assertDescribeTo(isLeft(is(1)), "Expected a <Left> with content matching is <1>");
+        assertDescribeTo(hasLength(1), "Expected Traversable to have length <1>");
+        assertDescribeTo(contains(1), "Expected at least one element matching is <1>");
+        assertDescribeTo(containsSubList(1), "Expected a Traversable containing in same order all of [<1>]");
+        assertDescribeTo(containsInOrder(1), "Expected a Traversable containing in same order all of [<1>]");
+        assertDescribeTo(containsInAnyOrder(1), "Expected a Traversable containing all of [<1>]");
+        assertDescribeTo(allMatch(is(1)), "Expected a Traversable where all elements should match is <1>");
+        assertDescribeTo(isSorted(), "Expected a Seq to be sorted but it was not");
+        assertDescribeTo(isReverseSorted(), "Expected a Seq to be reverse sorted but it was not");
+        assertDescribeTo(startsWith(1), "Expected a Seq to start with [<1>]");
+        assertDescribeTo(endsWith(1), "Expected a Seq to end with [<1>]");
+        assertDescribeTo(isUnique(), "Expected a Seq to have unique elements");
+        assertDescribeTo(containsSubSet(1), "Expected a Set containing all of [<1>]");
+        assertDescribeTo(isSubSetOf(1), "Expected a Set being a subset of [<1>]");
+        assertDescribeTo(containsKeys(1), "Expected a Map containing the following keys [<1>]");
+        assertDescribeTo(containsValues(1), "Expected a Map containing the following values [<1>]");
+        assertDescribeTo(contains(1, 2), "Expected a Map containing an entry <1>=<2>");
+        assertDescribeTo(isCancelled(), "Expected a cancelled Future but it was not");
+        assertDescribeTo(isCompleted(), "Expected a completed Future but it was not");
+        assertDescribeTo(isCompleted(is(1)), "Expected a completed Future but it was not");
+        assertDescribeTo(isEvaluated(), "Expected an evaluated Lazy but it was not");
+        assertDescribeTo(isEvaluated(is(1)), "Expected an evaluated Lazy but it was not");
+        assertDescribeTo(hasArity(1), "Expected a Tuple with arity <1>");
+        assertDescribeTo(hasArity(is(1)), "Expected a Tuple to match arity is <1>");
+        assertDescribeTo(isValid(), "Expected a valid Validation but it was not");
+        assertDescribeTo(isValid(is(1)), "Expected a valid Validation but it was not");
+        assertDescribeTo(isInvalid(), "Expected an invalid Validation but it was not");
+        assertDescribeTo(isInvalid(is(1)), "Expected an invalid Validation but it was not");
+    }
+
+    private void assertDescribeTo(SelfDescribing sd, String expected) {
+        Description description = new StringDescription();
+        sd.describeTo(description);
+        assertThat(description.toString(), is(expected));
     }
 }

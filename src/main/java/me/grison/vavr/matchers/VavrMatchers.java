@@ -471,8 +471,8 @@ public class VavrMatchers {
     public static <T, U> Matcher<Validation<T, U>> isInvalid(Matcher<T> matcher) {
         return typeSafeMatcher(
                 t -> t.isInvalid() && t.mapError(matcher::matches).getError(),
-                description -> description.appendText("Expected a valid Validation but it was not"),
-                (t, mismatch) -> mismatch.appendText("Expected a valid Validation but it was not")
+                description -> description.appendText("Expected an invalid Validation but it was not"),
+                (t, mismatch) -> mismatch.appendText("Expected an invalid Validation but it was not")
         );
     }
     //endregion
