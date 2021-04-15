@@ -14,9 +14,12 @@ import org.hamcrest.Matchers;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
 
-import static me.grison.vavr.matchers.VavrMatchers.*;
-import static me.grison.vavr.matchers.VavrMatchers.hasLength;
+import static me.grison.vavr.matchers.VavrMatchers.contains;
 import static me.grison.vavr.matchers.VavrMatchers.containsInAnyOrder;
+import static me.grison.vavr.matchers.VavrMatchers.endsWith;
+import static me.grison.vavr.matchers.VavrMatchers.hasLength;
+import static me.grison.vavr.matchers.VavrMatchers.startsWith;
+import static me.grison.vavr.matchers.VavrMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -195,6 +198,19 @@ public class VavrMatchersTest {
         containsInAnyOrder(List.of("foo", "bar", "bazz")).describeMismatch(List.of("foo"), description);
         assertThat(description.toString(),
                 is("Expected a Traversable containing all of [\"foo\",\"bar\",\"bazz\"] but is missing [\"bar\",\"bazz\"]"));
+    }
+
+    @Test
+    public void testContainsSubList() {
+        assertThat(List.of("foo", "bar", "bazz"), containsSublist(List.of("foo", "bar", "bazz")));
+        assertThat(List.of("bar", "foo", "bazz"), containsSublist("bar", "foo"));
+        assertThat(List.empty(), not(containsSublist(List.of("foo", "bar"))));
+        assertThat(List.of("bazz", "foo", "bar"), containsSublist(List.of("foo", "bar")));
+
+        Description description = new StringDescription();
+        containsSublist(List.of("foo", "bar", "bazz")).describeMismatch(List.of("foo"), description);
+        assertThat(description.toString(),
+                is("Expected a Traversable containing in same order all of [\"foo\",\"bar\",\"bazz\"] but is missing [\"bar\",\"bazz\"]"));
     }
 
     @Test
