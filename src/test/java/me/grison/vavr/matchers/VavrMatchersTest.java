@@ -202,13 +202,13 @@ public class VavrMatchersTest {
 
     @Test
     public void testContainsSubList() {
-        assertThat(List.of("foo", "bar", "bazz"), containsSublist(List.of("foo", "bar", "bazz")));
-        assertThat(List.of("bar", "foo", "bazz"), containsSublist("bar", "foo"));
-        assertThat(List.empty(), not(containsSublist(List.of("foo", "bar"))));
-        assertThat(List.of("bazz", "foo", "bar"), containsSublist(List.of("foo", "bar")));
+        assertThat(List.of("foo", "bar", "bazz"), containsSubList(List.of("foo", "bar", "bazz")));
+        assertThat(List.of("bar", "foo", "bazz"), containsSubList("bar", "foo"));
+        assertThat(List.empty(), not(containsSubList(List.of("foo", "bar"))));
+        assertThat(List.of("bazz", "foo", "bar"), containsSubList(List.of("foo", "bar")));
 
         Description description = new StringDescription();
-        containsSublist(List.of("foo", "bar", "bazz")).describeMismatch(List.of("foo"), description);
+        containsSubList(List.of("foo", "bar", "bazz")).describeMismatch(List.of("foo"), description);
         assertThat(description.toString(),
                 is("Expected a Traversable containing in same order all of [\"foo\",\"bar\",\"bazz\"] but is missing [\"bar\",\"bazz\"]"));
     }

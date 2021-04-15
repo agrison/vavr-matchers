@@ -168,11 +168,11 @@ public class VavrMatchers {
     }
 
     @SafeVarargs
-    public static <T> Matcher<Traversable<T>> containsSublist(T... items) {
-        return containsSublist(Vector.of(items));
+    public static <T> Matcher<Traversable<T>> containsSubList(T... items) {
+        return containsSubList(Vector.of(items));
     }
 
-    public static <T> Matcher<Traversable<T>> containsSublist(Traversable<T> items) {
+    public static <T> Matcher<Traversable<T>> containsSubList(Traversable<T> items) {
         return typeSafeMatcher(
                 t -> t.mkString().contains(items.mkString()),
                 description -> description.appendText("Expected a Traversable containing in same order all of ")
