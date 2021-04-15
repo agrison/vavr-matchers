@@ -18,6 +18,8 @@ This library contains matchers for hamcrest.
 
 ```java
 import static me.grison.vavr.matchers.VavrMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class AllTests {
     @Test
