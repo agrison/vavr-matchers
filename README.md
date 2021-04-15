@@ -91,6 +91,8 @@ See below for all available matchers.
 | hasLength(Matcher)     | Verifies that a `Traversable` has a length matching a `Matcher` |
 | contains(T)     | Verifies that a `Traversable` contain a specific element |
 | contains(Matcher)     | Verifies that a `Traversable` contain a specific element matching a `Matcher` |
+| containsSubList(T...)     | Verifies that a `Traversable` contain a specific sublist (with no other elements in between) |
+| containsSubList(Traversable)     | Verifies that a `Traversable` contain a specific sublist (with no other elements in between) |
 | containsInAnyOrder(T...)     | Verifies that a `Traversable` contain the given elements |
 | containsInAnyOrder(Traversable)     | Verifies that a `Traversable` contain the given elements |
 | allMatch(Matcher)     | Verifies that a `Traversable` contain only elements matching a `Matcher` |
