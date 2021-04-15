@@ -152,3 +152,12 @@ It is a work in progress, so don't hesitate to contribute and add more matchers.
 I needed this library and discovered an existing one from Vincent Ambo (@tazjin): https://github.com/tazjin/vavr-matchers
 
 Unfortunately it has been archived for years and couldn't fork it, so as I needed new functionalities here comes this library.
+
+## Self-promotion
+
+This library is also covered in my book [Practical Vavr](https://leanpub.com/practical-vavr).
+
+**Practical Vavr** is all about making you want to use **Vavr** in your day to day Java programming.
+
+If you want to improve the quality of your code by using a well-thought and beautifully designed functional programming
+library for Java, then you need to adopt Vavr, and this book will help you put it in practice.
