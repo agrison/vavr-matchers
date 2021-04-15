@@ -95,6 +95,8 @@ See below for all available matchers.
 | containsSubList(Traversable)     | Verifies that a `Traversable` contain a specific sublist (with no other elements in between) |
 | containsInAnyOrder(T...)     | Verifies that a `Traversable` contain the given elements |
 | containsInAnyOrder(Traversable)     | Verifies that a `Traversable` contain the given elements |
+| containsInOrder(T...)     | Verifies that a `Traversable` contain the given elements in order (with possibly other elements in between) |
+| containsInOrder(Traversable)     | Verifies that a `Traversable` contain the given elements in order (with possibly other elements in between) |
 | allMatch(Matcher)     | Verifies that a `Traversable` contain only elements matching a `Matcher` |
 | isSorted()     | Verifies that a `Traversable` is sorted |
 | isReverseSorted()     | Verifies that a `Traversable` is reverse sorted |
@@ -103,6 +105,15 @@ See below for all available matchers.
 | endsWith(T...)     | Verifies that a `Traversable` ends with the given elements |
 | endsWith(Traversable)     | Verifies that a `Traversable` ends with the given elements |
 | isUnique()     | Verifies that a `Traversable` contains no duplicates |
+
+### Set
+
+| Assertion                 | Description                                       |
+|------------------------|---------------------------------------------------|
+| containsSubSet(T...)     | Verifies that a `Set` contains at least the given elements |
+| containsSubSet(Traversable)     | Verifies that a `Set` contains at least the given elements |
+| isSubSetOf(T...)     | Verifies that a `Set` is a subset of the given elements |
+| isSubSetOf(Traversable)     | Verifies that a `Map` is a subset of the given elements |
 
 ### Map
 

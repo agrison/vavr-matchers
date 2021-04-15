@@ -4,10 +4,7 @@ import io.vavr.Function1;
 import io.vavr.Lazy;
 import io.vavr.Tuple;
 import io.vavr.Value;
-import io.vavr.collection.Map;
-import io.vavr.collection.Seq;
-import io.vavr.collection.Traversable;
-import io.vavr.collection.Vector;
+import io.vavr.collection.*;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
@@ -27,6 +24,7 @@ import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 import static io.vavr.control.Try.failure;
 import static io.vavr.control.Try.success;
+import static java.util.Collections.indexOfSubList;
 import static org.hamcrest.Matchers.is;
 
 @UtilityClass
@@ -174,13 +172,36 @@ public class VavrMatchers {
 
     public static <T> Matcher<Traversable<T>> containsSubList(Traversable<T> items) {
         return typeSafeMatcher(
-                t -> t.mkString().contains(items.mkString()),
+                t -> indexOfSubList(t.toJavaList(), items.toJavaList()) != -1,
                 description -> description.appendText("Expected a Traversable containing in same order all of ")
                         .appendValueList("[", ",", "]", items),
                 (t, mismatch) -> mismatch.appendText("Expected a Traversable containing in same order all of ")
                         .appendValueList("[", ",", "]", items)
                         .appendText(" but is missing ")
                         .appendValueList("[", ",", "]", items.partition(t::contains)._2)
+        );
+    }
+
+    @SafeVarargs
+    public static <T> Matcher<Traversable<T>> containsInOrder(T... items) {
+        return containsInOrder(Vector.of(items));
+    }
+
+    public static <T> Matcher<Traversable<T>> containsInOrder(Traversable<T> items) {
+        return typeSafeMatcher(
+                t -> {
+                    Queue<T> scan = items.toQueue();
+                    for (T item : t) {
+                        if (!scan.isEmpty() && item.equals(scan.head()))
+                            scan = scan.tail();
+                    }
+                    return scan.isEmpty();
+                },
+                description -> description.appendText("Expected a Traversable containing in same order all of ")
+                        .appendValueList("[", ",", "]", items),
+                (t, mismatch) -> mismatch.appendText("Expected a Traversable containing in same order all of ")
+                        .appendValueList("[", ",", "]", items)
+                        .appendText(" but was not")
         );
     }
 
@@ -271,6 +292,41 @@ public class VavrMatchers {
                         .appendText("Expected a Seq to have unique elements but found the following duplicate elements ")
                         .appendValueList("[", ",", "]",
                                 t.toSet().filter(e -> t.count(x -> x.equals(e)) > 1))
+        );
+    }
+    //endregion
+
+    //region Set
+    @SafeVarargs
+    public static <T> Matcher<Set<T>> containsSubSet(T... items) {
+        return containsSubSet(HashSet.of(items));
+    }
+
+    public static <T> Matcher<Set<T>> containsSubSet(Traversable<T> items) {
+        return typeSafeMatcher(
+                t -> t.containsAll(items),
+                description -> description.appendText("Expected a Set containing all of ")
+                        .appendValueList("[", ",", "]", items),
+                (t, mismatch) -> mismatch.appendText("Expected a Set containing all of ")
+                        .appendValueList("[", ",", "]", items)
+                        .appendText(" but is missing ")
+                        .appendValueList("[", ",", "]", items.partition(t::contains)._2)
+        );
+    }
+    @SafeVarargs
+    public static <T> Matcher<Set<T>> isSubSetOf(T... items) {
+        return isSubSetOf(HashSet.of(items));
+    }
+
+    public static <T> Matcher<Set<T>> isSubSetOf(Traversable<T> items) {
+        return typeSafeMatcher(
+                items::containsAll,
+                description -> description.appendText("Expected a Set being a subset of ")
+                        .appendValueList("[", ",", "]", items),
+                (t, mismatch) -> mismatch.appendText("Expected a Set being a subset of ")
+                        .appendValueList("[", ",", "]", items)
+                        .appendText(" but contained also ")
+                        .appendValueList("[", ",", "]", t.partition(items::contains)._2)
         );
     }
     //endregion

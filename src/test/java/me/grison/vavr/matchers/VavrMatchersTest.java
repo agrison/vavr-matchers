@@ -3,6 +3,7 @@ package me.grison.vavr.matchers;
 import io.vavr.Lazy;
 import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
+import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
@@ -214,6 +215,21 @@ public class VavrMatchersTest {
     }
 
     @Test
+    public void testContainsInOrder() {
+        assertThat(List.of("foo", "bar", "bazz"), containsInOrder(List.of("foo", "bar")));
+        assertThat(List.of("foo", "bar", "bazz"), containsInOrder(List.of("bar", "bazz")));
+        assertThat(List.of("foo", "bar", "bazz", "quxx"), containsInOrder("foo", "bazz", "quxx"));
+        assertThat(List.of("foo", "bar", "bazz"), not(containsInOrder("bar", "foo")));
+        assertThat(List.of("foo", "bar"), not(containsInOrder("foo", "bar", "bazz")));
+        assertThat(List.empty(), not(containsInOrder(List.of("foo", "bar"))));
+
+        Description description = new StringDescription();
+        containsInOrder(List.of("foo", "bar")).describeMismatch(List.of("bar", "foo", "bazz"), description);
+        assertThat(description.toString(),
+                is("Expected a Traversable containing in same order all of [\"foo\",\"bar\"] but was not"));
+    }
+
+    @Test
     public void testAllMatch() {
         assertThat(List.of("foo", "bar", "baz"), allMatch(Matchers.hasLength(3)));
         assertThat(List.of("foo", "bar"), not(allMatch(Matchers.hasLength(4))));
@@ -279,6 +295,32 @@ public class VavrMatchersTest {
         isUnique().describeMismatch(List.of(1, 2, 1, 3, 3, 4), description);
         assertThat(description.toString(),
                 is("Expected a Seq to have unique elements but found the following duplicate elements [<1>,<3>]"));
+    }
+
+    @Test
+    public void testContainsSubSet() {
+        assertThat(HashSet.of(1, 2, 3, 4), containsSubSet(1, 2));
+        assertThat(HashSet.of(1, 2, 3, 4), containsSubSet(1, 2, 3));
+        assertThat(HashSet.of(1, 2, 3, 4), containsSubSet(List.of(1, 2, 3, 4)));
+        assertThat(HashSet.of(1, 2, 3, 4), not(containsSubSet(1, 2, 3, 4, 5)));
+
+        Description description = new StringDescription();
+        containsSubSet(1, 2, 3).describeMismatch(HashSet.of(1, 2), description);
+        assertThat(description.toString(),
+                is("Expected a Set containing all of [<1>,<2>,<3>] but is missing [<3>]"));
+    }
+
+    @Test
+    public void testIsSubSetOf() {
+        assertThat(HashSet.of(1, 2), isSubSetOf(1, 2, 3, 4));
+        assertThat(HashSet.of(2, 3), isSubSetOf(1, 2, 3, 4));
+        assertThat(HashSet.of(2, 3), isSubSetOf(List.of(1, 2, 3, 4)));
+        assertThat(HashSet.of(2, 3), not(isSubSetOf(1, 2)));
+
+        Description description = new StringDescription();
+        isSubSetOf(1, 2, 3).describeMismatch(HashSet.of(1, 2, 3, 4), description);
+        assertThat(description.toString(),
+                is("Expected a Set being a subset of [<1>,<2>,<3>] but contained also [<4>]"));
     }
 
     @Test
