@@ -9,9 +9,7 @@ on:
       - "pom.xml"
       - "src/main/java/me/grison/vavr/matchers/*.java"
       - "src/test/java/me/grison/vavr/matchers/*.java"
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ 'releases/**' ]
 
 jobs:
   build:

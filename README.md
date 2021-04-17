@@ -1,6 +1,6 @@
 # vavr-matchers
 
-![vavr-matchers](https://github.com/agrison/vavr-matchers/workflows/vavr-matchers/badge.svg)
+![vavr-matchers](https://github.com/agrison/vavr-matchers/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/agrison/vavr-matchers/branch/master/graph/badge.svg?token=lkICxLZmij)](https://codecov.io/gh/agrison/vavr-matchers)
 
 This library contains matchers for hamcrest.
