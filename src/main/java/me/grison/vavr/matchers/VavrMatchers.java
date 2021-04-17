@@ -1,14 +1,9 @@
 package me.grison.vavr.matchers;
 
-import io.vavr.Function1;
-import io.vavr.Lazy;
-import io.vavr.Tuple;
-import io.vavr.Value;
+import io.vavr.*;
 import io.vavr.collection.*;
 import io.vavr.concurrent.Future;
-import io.vavr.control.Either;
-import io.vavr.control.Try;
-import io.vavr.control.Validation;
+import io.vavr.control.*;
 import lombok.experimental.UtilityClass;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
