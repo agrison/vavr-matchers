@@ -3,7 +3,7 @@
 ![vavr-matchers](https://github.com/agrison/vavr-matchers/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/agrison/vavr-matchers/branch/master/graph/badge.svg?token=lkICxLZmij)](https://codecov.io/gh/agrison/vavr-matchers)
 
-This library contains matchers for hamcrest.
+This library contains [Vavr](https://github.com/vavr-io/vavr) matchers for [hamcrest](https://github.com/hamcrest/JavaHamcrest).
 
 ## Install
 
