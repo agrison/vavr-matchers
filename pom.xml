@@ -21,7 +21,7 @@
         <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
-            <version>0.10.3</version>
+            <version>0.10.4</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.22</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
